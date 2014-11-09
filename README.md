@@ -3,13 +3,15 @@
 This firmware was released as C headers found in mrvl_wlan_v7drv.  Reference design drivers that were released as a part of Linksys' firmware GPL tarball for the WRT1900AC.  I just put the bytes together.
 
 Starting at offset 0, there is a 16 byte header.  This header repeats after every 512 bytes of "data".  It is of the form:  
-0100 0000 XXXX XXXX XXXX XXXX XXXX XXXX
+0100 0000 XXXX XXXX XXXX XXXX XXXX XXXX  
+The last header in the file always seems to be:  
+0400 0000 0000 0000 0000 0000 1fdb 8c18
 ```C
 struct record
 {
   le32 magic = 0x00000001;
   struct record *next; //probably not right. increment by 508 (0x1fc) each time.
-  le32 data_length;
+  le32 data_length; //this is a better relative pointer, it'll tell us where the next header starts.
   le32 crc; //guessing, no crc32 match yet.
   char data[512];
 } __attribute__((__packed__));
